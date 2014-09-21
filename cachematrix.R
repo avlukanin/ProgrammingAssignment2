@@ -8,14 +8,28 @@
 ## The matrix supplied should be invertible.
 
 makeCacheMatrix <- function(x = matrix()) {
+    ## sm is a private variable, which has the latest inverted matrix
     sm <- NULL
+    
+    ## the matrix can be redefined, e.g.
+    ## a <- makeCacheMatrix(matrix(1:4, 2, 2))
+    ## a$set(matrix(4:1, 2, 2))
     set <- function(y) {
         x <<- y
+        ## the cache should be cleared in this case
         sm <<- NULL
     }
+    
+    ## get the original (or redefined with set()) matrix
     get <- function() x
+    
+    ## cache the matrix (save the result in the inner variable)
     setsmatrix <- function(smatrix) sm <<- smatrix
+    
+    ## get the cached inverted matrix
     getsmatrix <- function() sm
+    
+    ## return a list of functions, accessing the private variables
     list(set = set, get = get,
          setsmatrix = setsmatrix,
          getsmatrix = getsmatrix)
@@ -27,11 +41,16 @@ makeCacheMatrix <- function(x = matrix()) {
 ## then cacheSolve retrieves the inverse from the cache.
 
 cacheSolve <- function(x, ...) {
+    ## check if the result is stored already in the cache
     m <- x$getsmatrix()
     if(!is.null(m)) {
         message("getting cached data")
         return(m)
     }
+    
+    ## otherwise...
+    
+    ## get the original martix
     data <- x$get()
     
     ## Inverse the matrix
@@ -40,6 +59,6 @@ cacheSolve <- function(x, ...) {
     ## Cache the result
     x$setsmatrix(m)
     
-    ## Returns a matrix that is the inverse of 'x'
+    ## Return a matrix that is the inverse of 'x'
     m
 }
